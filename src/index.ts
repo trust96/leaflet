@@ -36,24 +36,22 @@ const myIcon = icon({
   iconUrl: "../node_modules/leaflet/dist/images/marker-icon.png",
 });
 
-let myMarkers: Marker[] = marker();
-(() =>
-  setInterval(async () => {
-    const datas = await axios.get(
-      "https://api.metro.net/agencies/lametro/vehicles/"
-    );
-    const data = datas.data.items
-      .filter((position: Data) => position.heading === 1)
-      .map(({ latitude, longitude }: Data, index: number, array: Data[]) => {
-        array.forEach((item) =>
-          marker([latitude, longitude], { icon: myIcon }).addTo(myMap)
-        );
-        return [latitude, longitude];
-      }) as [number, number][];
+(async () => {
+  const datas = await axios.get(
+    "https://api.metro.net/agencies/lametro/vehicles/"
+  );
+  const data = datas.data.items
+    //  .filter((position: Data) => position.heading === 1)
+    .map(({ latitude, longitude }: Data, index: number, array: Data[]) => {
+      array.forEach((item) =>
+        marker([latitude, longitude], { icon: myIcon }).addTo(myMap)
+      );
+      return [latitude, longitude];
+    }) as [number, number][];
 
-    const myPolygon = polygon(data)
-      .addEventListener("add", () => {
-        console.log("added");
-      })
-      .addTo(myMap);
-  }, 1000))();
+  const myPolygon = polygon(data)
+    .addEventListener("add", () => {
+      console.log("added");
+    })
+    .addTo(myMap);
+})();
