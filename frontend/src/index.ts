@@ -1,13 +1,13 @@
 import "./style.scss";
-import { icon, map, marker, polygon, tileLayer } from "leaflet";
+import { map, marker, tileLayer, polygon, geoJSON } from "leaflet";
 //@ts-ignore
-import ruspa from "./assets/ruspa.png";
 //@ts-ignore
 import logo from "./assets/logo.png";
 import axios from "axios";
 import { Data } from "./Data";
-import distance from "./distance";
-
+//@ts-ignore
+import simplePolygon from "simplepolygon";
+import { iconSelector } from "./iconSelector";
 const logoImage = document.querySelector(".logo") as HTMLImageElement;
 logoImage.src = logo;
 
@@ -16,12 +16,7 @@ tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution:
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 }).addTo(myMap);
-
 // scraper icon
-const scraperIcon = icon({
-  iconUrl: ruspa,
-  iconSize: [71, 44.51],
-});
 
 (async () => {
   const datas = await axios.get(
@@ -32,14 +27,14 @@ const scraperIcon = icon({
   console.log(data);
 
   const locations = data
-    //.filter((position: Data) => position.heading === 1)
+    .filter((position: Data) => position.heading === 90)
     .map(({ latitude, longitude }: Data) => {
       return [latitude, longitude];
     })
     .sort() as [number, number][];
 
-  data.forEach((item: Data) =>
-    marker([item.latitude, item.longitude], { icon: scraperIcon })
+  locations.forEach((item) =>
+    marker([item[0], item[1]], { icon: iconSelector() })
       .bindPopup(
         `        <table class="table">
       <thead>
@@ -50,8 +45,8 @@ const scraperIcon = icon({
         </thead>
         <tbody>
           <tr>
-            <td>${item.route_id}</td>
-            <td>${item.heading}</td>
+            <td>${item[0]}</td>
+            <td>${item[1]}</td>
           </tr>
 
         </tbody>
@@ -59,7 +54,10 @@ const scraperIcon = icon({
       )
       .addTo(myMap)
   );
+
   const myPolygon = polygon(locations).addTo(myMap);
+  myPolygon.redraw();
+
   myMap.setView(myPolygon.getCenter());
   myMap.fitBounds(myPolygon.getBounds());
 })();
