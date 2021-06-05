@@ -40,18 +40,14 @@ const config: webpack.Configuration = {
 
         type: "asset/resource",
       },
-      {
-        test: /\.pug$/i,
-        use: "pug-loader",
-        exclude: /node_modules/,
-      },
+
     ],
   },
 
   plugins: [
     new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
-      template: "./src/index.pug",
+      template: "./src/index.html",
     }),
 
     new ImageMinimizerPlugin({
