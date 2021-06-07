@@ -7,12 +7,15 @@ import { Data } from "./Data";
 
 import { iconSelector } from "./iconSelector";
 import area from "@turf/area";
+import mypolyline from "./polyline";
+import { json, select } from "d3";
+import { sliderBottom } from "d3-simple-slider";
 const logoImage = document.querySelector(".logo") as HTMLImageElement;
 const areaPolygonPara = document.querySelector(".area") as HTMLParagraphElement;
 
 logoImage.src = logo;
 
-const myMap = map("map").setView([0, 0], 2);
+export const myMap = map("map").setView([0, 0], 2);
 tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution:
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -20,20 +23,14 @@ tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 // scraper icon
 
 (async () => {
-  const dayLocations = await axios.get("http://localhost:5000");
-  const dayLocation = dayLocations.data
-    .filter((item: { id: number }) => item.id <= 18)
-    .map(({ latitude, longitude }: { latitude: number; longitude: number }) => [
-      latitude,
-      longitude,
-    ]);
-  polyline(dayLocation).addTo(myMap);
   const datas = await axios.get(
     "https://api.metro.net/agencies/lametro/vehicles/"
   );
   const data = datas.data.items;
   const locations = data
+
     //   .filter((position: Data) => position.heading === 90)
+
     .map(({ latitude, longitude }: Data) => {
       return [latitude, longitude];
     });
@@ -103,4 +100,19 @@ tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   //set the view to the center of the polygon and zoom to its position
   myMap.setView(myPolygon.getCenter());
   myMap.fitBounds(myPolygon.getBounds(), { animate: true, duration: 250 });
+  console.log(myMap.getPanes().overlayPane);
 })();
+
+mypolyline();
+
+const div = document.createElement("div");
+//const slider = sliderBottom().;
+
+const g = select(div)
+  .append("svg")
+  .attr("width", 500)
+  .attr("height", 100)
+  .append("g")
+  .attr("transform", "translate(30,30)");
+
+//g.call(slider);

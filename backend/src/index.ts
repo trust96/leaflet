@@ -14,16 +14,26 @@ app.use(cors());
         "https://api.metro.net/agencies/lametro/vehicles/"
       );
       const items: Data[] = data.data.items;
-      const location = items.map((item) => {
-        return [item.latitude, item.longitude];
-      });
-      location.forEach(async (loc) => {
-        await Vehicle.create({
-          latitude: loc[0] + Math.random(),
-          longitude: loc[1] + Math.random(),
-        });
-      });
-    }, 100);
+
+      const locations = items
+        .filter((item) => item.heading <= 18)
+        .map(({ latitude, longitude, heading }: Data) => [
+          latitude,
+          longitude,
+          heading,
+        ]);
+      // locations.forEach(async ([latitude, longitude, heading]) => {
+      //   try {
+      //     await Vehicle.create({
+      //       latitude: latitude + Math.random(),
+      //       longitude: longitude + Math.random(),
+      //       heading,
+      //     });
+      //   } catch (err) {
+      //     console.error(err.message);
+      //   }
+      // });
+    }, 1000);
   } catch (err) {
     console.error(err.message);
   }
@@ -31,6 +41,5 @@ app.use(cors());
 app.get("/", async (req: Request, res: Response) => {
   const users = await Vehicle.findAll();
   res.json(users);
-  console.log(users);
 });
 app.listen(5000, "localhost", () => console.log(`http://localhost:5000`));

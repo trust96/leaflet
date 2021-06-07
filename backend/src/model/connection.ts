@@ -6,7 +6,7 @@ const sequelize = new Sequelize("postgres", "postgres", "211996", {
 });
 (async () => {
   try {
-    await sequelize.sync({ force: true });
+    await sequelize.sync();
   } catch (err) {
     console.error(err.message);
   }
