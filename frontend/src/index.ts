@@ -1,12 +1,10 @@
 import "./style.scss";
-import { map, marker, tileLayer, polygon, geoJSON } from "leaflet";
-//@ts-ignore
+import { map, marker, tileLayer, polygon, geoJSON, polyline } from "leaflet";
 //@ts-ignore
 import logo from "./assets/logo.png";
 import axios from "axios";
 import { Data } from "./Data";
-//@ts-ignore
-import simplePolygon from "simplepolygon";
+
 import { iconSelector } from "./iconSelector";
 import area from "@turf/area";
 const logoImage = document.querySelector(".logo") as HTMLImageElement;
@@ -22,13 +20,18 @@ tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 // scraper icon
 
 (async () => {
+  const dayLocations = await axios.get("http://localhost:5000");
+  const dayLocation = dayLocations.data
+    .filter((item: { id: number }) => item.id <= 18)
+    .map(({ latitude, longitude }: { latitude: number; longitude: number }) => [
+      latitude,
+      longitude,
+    ]);
+  polyline(dayLocation).addTo(myMap);
   const datas = await axios.get(
     "https://api.metro.net/agencies/lametro/vehicles/"
   );
-
   const data = datas.data.items;
-  console.log(data);
-
   const locations = data
     .filter((position: Data) => position.heading === 90)
     .map(({ latitude, longitude }: Data) => {
@@ -92,9 +95,12 @@ tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
   const myPolygon = polygon(locations).addTo(myMap);
   const geoPoly = myPolygon.toGeoJSON();
+
+  //calculate the area of the polygon in square meters
   const myArea = Math.floor(area(geoPoly));
-  console.log(area(geoPoly));
+  areaPolygonPara.innerHTML = `<strong>Area</strong>: ${myArea} m<sup>2</sup>`;
+
+  //set the view to the center of the polygon and zoom to its position
   myMap.setView(myPolygon.getCenter());
   myMap.fitBounds(myPolygon.getBounds(), { animate: true, duration: 250 });
-  areaPolygonPara.innerHTML = `<strong>Area</strong>: ${myArea} m<sup>2</sup>`;
 })();
