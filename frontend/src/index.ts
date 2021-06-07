@@ -33,7 +33,7 @@ tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   );
   const data = datas.data.items;
   const locations = data
-    .filter((position: Data) => position.heading === 90)
+    //   .filter((position: Data) => position.heading === 90)
     .map(({ latitude, longitude }: Data) => {
       return [latitude, longitude];
     });
