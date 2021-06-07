@@ -15,5 +15,6 @@ const Vehicle = sequelize.define("vehicle", {
     allowNull: false,
     defaultValue: Sequelize.fn("NOW"),
   },
+  heading: { type: DataTypes.REAL, allowNull: false },
 });
 export default Vehicle;
