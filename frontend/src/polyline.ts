@@ -2,6 +2,7 @@ import axios from "axios";
 import { json, select } from "d3";
 import { geoTransform } from "d3-geo";
 import { polyline } from "leaflet";
+import { Data } from "./Data";
 import { myMap } from "./index";
 
 const mypolyline = async () => {
@@ -15,15 +16,24 @@ const mypolyline = async () => {
           longitude,
         ]
       );
-    const svg = select(myMap.getPanes().overlayPane).append("svg");
 
-    // if you don't include the leaflet-zoom-hide when a
-    // user zooms in or out you will still see the phantom
-    // original SVG
-    const g = svg.append("g").attr("class", "leaflet-zoom-hide");
+    const time = dayLocations.data.map(({ dateTime }: { dateTime: string }) =>
+      new Date(dateTime).getSeconds()
+    );
+    console.log(time);
     const myPolyline = polyline(dayLocation);
 
-    const myGeojson = myPolyline.toGeoJSON();
+    //@ts-ignore
+    const slider = sliderBottom().min().max(10).step(1).width(300);
+
+    const g = select("#slider")
+      .append("svg")
+      .attr("width", 500)
+      .attr("height", 100)
+      .append("g")
+      .attr("transform", "translate(30,30)");
+
+    g.call(slider);
   } catch (err) {
     console.error(err.message);
   }

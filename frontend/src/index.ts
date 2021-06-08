@@ -102,15 +102,3 @@ tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 })();
 
 mypolyline();
-
-const div = document.createElement("div");
-const slider = sliderBottom().min(0).max(10).step(1).width(300);
-
-const g = select(div)
-  .append("svg")
-  .attr("width", 500)
-  .attr("height", 100)
-  .append("g")
-  .attr("transform", "translate(30,30)");
-
-g.call(slider);
