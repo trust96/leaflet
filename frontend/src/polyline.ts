@@ -1,6 +1,7 @@
 import axios from "axios";
-import { json, select } from "d3";
+import { geoPath, json, scaleLinear, select } from "d3";
 import { geoTransform } from "d3-geo";
+import { sliderBottom } from "d3-simple-slider";
 import { polyline } from "leaflet";
 import { Data } from "./Data";
 import { myMap } from "./index";
@@ -16,24 +17,15 @@ const mypolyline = async () => {
           longitude,
         ]
       );
+    const svg = select(myMap.getPanes().overlayPane).append("svg");
 
-    const time = dayLocations.data.map(({ dateTime }: { dateTime: string }) =>
-      new Date(dateTime).getSeconds()
-    );
-    console.log(time);
-    const myPolyline = polyline(dayLocation);
+    // if you don't include the leaflet-zoom-hide when a
+    // user zooms in or out you will still see the phantom
+    // original SVG
+    const g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
-    //@ts-ignore
-    const slider = sliderBottom().min(0).max(10).step(1).width(300);
-
-    const g = select("#slider")
-      .append("svg")
-      .attr("width", 500)
-      .attr("height", 100)
-      .append("g")
-      .attr("transform", "translate(30,30)");
-
-    g.call(slider);
+    const transform = geoTransform({ point: projectPoint });
+    const d3path = geoPath().projection(transform);
   } catch (err) {
     console.error(err.message);
   }
