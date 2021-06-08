@@ -8,7 +8,7 @@ import { Data } from "./Data";
 import { iconSelector } from "./iconSelector";
 import area from "@turf/area";
 import mypolyline from "./polyline";
-import { json, select } from "d3";
+import { json, scaleLinear, select } from "d3";
 import { sliderBottom } from "d3-simple-slider";
 const logoImage = document.querySelector(".logo") as HTMLImageElement;
 const areaPolygonPara = document.querySelector(".area") as HTMLParagraphElement;
@@ -28,7 +28,9 @@ tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   );
   const data = datas.data.items;
   const locations = data
-    // .filter((position: Data) => position.heading === 90)
+
+    //   .filter((position: Data) => position.heading === 90)
+
     .map(({ latitude, longitude }: Data) => {
       return [latitude, longitude];
     });
