@@ -8,7 +8,7 @@ import { Data } from "./Data";
 import { iconSelector } from "./iconSelector";
 import area from "@turf/area";
 import mypolyline from "./polyline";
-import { json, select } from "d3";
+import { json, scaleLinear, select } from "d3";
 import { sliderBottom } from "d3-simple-slider";
 const logoImage = document.querySelector(".logo") as HTMLImageElement;
 const areaPolygonPara = document.querySelector(".area") as HTMLParagraphElement;
@@ -104,15 +104,17 @@ tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 })();
 
 mypolyline();
+// const sliderScale = scaleLinear()
+//   .domain([0, 24]) // Red component goes from 0 to 255
+//   .range([0, 500])
+//   .clamp(true); // Width of slider is 200 px
+// const div = document.createElement("div");
+// const slider = sliderBottom(sliderScale);
+// const g = select("#slider")
+//   .append("svg")
+//   .attr("width", "100%")
+//   .attr("height", 100)
+//   .append("g")
+//   .attr("transform", "translate(20,50)");
 
-const div = document.createElement("div");
-//const slider = sliderBottom().;
-
-const g = select(div)
-  .append("svg")
-  .attr("width", 500)
-  .attr("height", 100)
-  .append("g")
-  .attr("transform", "translate(30,30)");
-
-//g.call(slider);
+// g.call(slider);

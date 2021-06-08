@@ -21,9 +21,12 @@ const mypolyline = async () => {
     // user zooms in or out you will still see the phantom
     // original SVG
     const g = svg.append("g").attr("class", "leaflet-zoom-hide");
-    const myPolyline = polyline(dayLocation);
-
-    const myGeojson = myPolyline.toGeoJSON();
+    const myPolyline = polyline(dayLocation).addTo(myMap);
+    // @ts-ignore
+    select(myPolyline._path)
+      .transition()
+      .duration(3500)
+      .attr("stroke", "rgb(0,0, 0)");
   } catch (err) {
     console.error(err.message);
   }
