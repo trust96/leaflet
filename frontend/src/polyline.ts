@@ -24,7 +24,7 @@ const mypolyline = async () => {
     const myPolyline = polyline(dayLocation);
 
     //@ts-ignore
-    const slider = sliderBottom().min().max(10).step(1).width(300);
+    const slider = sliderBottom().min(0).max(10).step(1).width(300);
 
     const g = select("#slider")
       .append("svg")
