@@ -10,7 +10,7 @@ import area from "@turf/area";
 import mypolyline from "./polyline";
 import { json, scaleLinear, select } from "d3";
 import { sliderBottom } from "d3-simple-slider";
-import anime from "animejs";
+
 const logoImage = document.querySelector(".logo") as HTMLImageElement;
 const areaPolygonPara = document.querySelector(".area") as HTMLParagraphElement;
 

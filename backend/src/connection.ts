@@ -7,7 +7,7 @@ export const sequelize = new Sequelize("postgres", "postgres", "211996", {
 
 (async () => {
   try {
-    await sequelize.sync();
+    await sequelize.sync({ force: true });
   } catch (error) {
     console.error(error.message);
   }
