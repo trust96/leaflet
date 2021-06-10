@@ -1,21 +1,34 @@
 import "./style.scss";
-import { map, marker, tileLayer, polygon, geoJSON, polyline } from "leaflet";
+import {
+  map,
+  marker,
+  tileLayer,
+  polygon,
+  geoJSON,
+  polyline,
+  Marker,
+  Polyline,
+} from "leaflet";
 //@ts-ignore
 import logo from "./assets/logo.png";
+import "leaflet.polyline.snakeanim";
 import axios from "axios";
 import { Data } from "./Data";
 
 import { iconSelector } from "./iconSelector";
 import area from "@turf/area";
-import mypolyline from "./polyline";
+//import mypolyline from "./polyline";
 import { json, scaleLinear, select } from "d3";
 import { sliderBottom } from "d3-simple-slider";
-
+import { create } from "nouislider";
+import wNumb from "wnumb";
+import "leaflet.animatedmarker/src/AnimatedMarker";
+import { LineString, MultiLineString } from "geojson";
 const logoImage = document.querySelector(".logo") as HTMLImageElement;
 const areaPolygonPara = document.querySelector(".area") as HTMLParagraphElement;
 
 logoImage.src = logo;
-
+const myButton = document.querySelector(".mybutton") as HTMLButtonElement;
 export const myMap = map("map").setView([0, 0], 2);
 tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution:
@@ -101,7 +114,131 @@ tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   //set the view to the center of the polygon and zoom to its position
   myMap.setView(myPolygon.getCenter());
   myMap.fitBounds(myPolygon.getBounds(), { animate: true, duration: 250 });
-  console.log(myMap.getPanes().overlayPane);
 })();
 
-mypolyline();
+//mypolyline();
+const range = document.querySelector("#slider");
+
+//@ts-ignore
+create(range, {
+  range: {
+    min: 0,
+    max: 23.6,
+  },
+
+  step: 1,
+
+  // Handles start at ...
+  start: [1, 12],
+
+  // Display colored bars between handles
+  connect: true,
+
+  // Put '0' at the bottom of the slider
+  direction: "ltr",
+  orientation: "horizontal",
+  animate: true,
+
+  // Move handle on tap, bars are draggable
+  behaviour: "tap-drag",
+  tooltips: true,
+  format: wNumb({
+    decimals: 2,
+    mark: ":",
+  }),
+
+  // Show a scale with the slider
+  pips: {
+    mode: "steps",
+    stepped: true,
+    density: 4,
+  },
+});
+
+let myPolyline: Polyline<LineString | MultiLineString, any>;
+// //@ts-ignore
+// range.noUiSlider.on("start", async () => {
+//   try {
+//     //@ts-ignore
+//     const rangeNumber = range.noUiSlider.get().map((item: string) => {
+//       const temp = item.split(":")[0];
+
+//       return temp;
+//     });
+//     let dayLocations = await axios.get("http://localhost:5000");
+//     let dayLocation = dayLocations.data
+//       .filter(
+//         (item: { id: string }) =>
+//           item.id >= rangeNumber[0] && item.id <= rangeNumber[1]
+//       )
+//       .map(
+//         ({ latitude, longitude }: { latitude: number; longitude: number }) => [
+//           latitude,
+//           longitude,
+//         ]
+//       );
+
+//     if (myPolyline) {
+//       myPolyline.remove();
+//     }
+//     myPolyline = polyline(dayLocation).addTo(myMap);
+
+//     //@ts-ignore
+//     const animatedMarker: any = L.animatedMarker(myPolyline.getLatLngs(), {
+//       icon: iconSelector("scraper"),
+
+//       onEnd: function () {
+//         animatedMarker.remove();
+//       },
+//       autoStart: false,
+//     });
+
+//     myMap.addLayer(animatedMarker);
+//     myButton.addEventListener("click", () => animatedMarker.start());
+//   } catch (err) {
+//     console.error(err.message);
+//   }
+// });
+
+myButton.addEventListener("click", async () => {
+  try {
+    //@ts-ignore
+    const rangeNumber = range.noUiSlider.get().map((item: string) => {
+      const temp = item.split(":")[0];
+
+      return temp;
+    });
+    let dayLocations = await axios.get("http://localhost:5000");
+    let dayLocation = dayLocations.data
+      .filter(
+        (item: { id: string }) =>
+          item.id >= rangeNumber[0] && item.id <= rangeNumber[1]
+      )
+      .map(
+        ({ latitude, longitude }: { latitude: number; longitude: number }) => [
+          latitude,
+          longitude,
+        ]
+      );
+
+    if (myPolyline) {
+      myPolyline.remove();
+    }
+    myPolyline = polyline(dayLocation).addTo(myMap);
+
+    //@ts-ignore
+    const animatedMarker: any = L.animatedMarker(myPolyline.getLatLngs(), {
+      icon: iconSelector("scraper"),
+
+      onEnd: function () {
+        animatedMarker.remove();
+      },
+      autoStart: false,
+    });
+
+    myMap.addLayer(animatedMarker);
+    animatedMarker.start();
+  } catch (err) {
+    console.error(err.message);
+  }
+});
